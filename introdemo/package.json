@@ -12,8 +12,10 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.751.0",
     "aws-sdk": "^2.1692.0",
+    "jquery": "^3.7.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "turn.js": "^1.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

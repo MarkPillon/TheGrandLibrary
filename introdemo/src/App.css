@@ -2,19 +2,25 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  text-align: left;
+}
+
+.books-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .book-item {
   border: 1px solid #ddd;
   padding: 1rem;
-  margin: 1rem 0;
+  margin: 0;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: stretch; /* Make both elements stretch to same height */
 }
 
 .book-item:hover {
@@ -23,9 +29,18 @@
 
 .book-item img {
   max-width: 150px;
-  height: auto;
+  height: 100%; /* Make image take full height of the container */
+  object-fit: cover; /* Preserve aspect ratio without distortion */
   border-radius: 8px;
-  margin-bottom: 1rem;
+  margin-right: 1rem;
+  flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.book-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensure it takes up remaining height */
+  flex-grow: 1; /* Allow content to stretch and fill available space */
 }
 
 .book-item h3 {
@@ -37,13 +52,7 @@
 .book-item p {
   font-size: 1rem;
   color: #555;
-  text-align: center;
-}
-
-.books-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  margin-bottom: 0.5rem;
 }
 
 button {
@@ -83,25 +92,3 @@ input:focus {
   outline: none;
   border-color: #61dafb;
 }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-
-img {
-  max-width: 50px;
-  height: auto;
-}
-
