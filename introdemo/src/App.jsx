@@ -47,7 +47,11 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>The Grand Library Book Search</h1>
+      <h1>
+        <span className="library-name">The Grand Library</span>
+        <br />
+        <span className="book-search">Book Search</span>
+      </h1>
       <input
         type="text"
         value={search}
