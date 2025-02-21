@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import PDFViewer from "./PDFViewer";
+import Flipbook from "./Flipbook";
 
 const App = () => {
   const [books, setBooks] = useState([]);
@@ -8,7 +8,9 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [expandedBook, setExpandedBook] = useState(null);
 
+  // Handle search for books
   const handleSearch = async () => {
     if (!search) return;
 
@@ -20,7 +22,7 @@ const App = () => {
         `https://o6hca89epf.execute-api.us-east-1.amazonaws.com/prod/search?search=${search}&type=Title`
       );
       const data = await response.json();
-      console.log("Fetched Data:", data); // Debug API response
+      console.log("Fetched Data:", data);
 
       if (response.ok) {
         if (Array.isArray(data) && data.length > 0) {
@@ -39,20 +41,24 @@ const App = () => {
     }
   };
 
+  // Debugging: Log selected book state
   useEffect(() => {
-    console.log("Books state updated:", books);
-  }, [books]);
+    console.log("Selected Book:", selectedBook);
+  }, [selectedBook]);
 
-  const [expandedBook, setExpandedBook] = useState(null);
-
+  // Toggle expanded book description
   const toggleDescription = (bookId) => {
     setExpandedBook(expandedBook === bookId ? null : bookId);
   };
 
+  // Handle viewing a PDF
   const handleViewPDF = (book) => {
-    setSelectedBook(book);
+    const pdfUrl = `https://grandlibrary.s3.amazonaws.com/${encodeURIComponent(book.S3Path)}`;
+    console.log("Viewing PDF:", pdfUrl);
+    setSelectedBook({ ...book, PDFLink: pdfUrl });
   };
 
+  // Close the PDF viewer
   const closePDFViewer = () => {
     setSelectedBook(null);
   };
@@ -92,13 +98,20 @@ const App = () => {
 
         {books.map((book) => {
           // Construct full S3 URL
-          const pdfUrl = `https://grandlibrary.s3.amazonaws.com/${book.S3Path}`;
+          const pdfUrl = `https://grandlibrary.s3.amazonaws.com/${decodeURIComponent(decodeURIComponent(book.S3Path))}`;
+console.log("Constructed PDF URL:", pdfUrl);
+          
+
+          // Update the cover image URL to use HTTPS
+          const coverUrl = book.CoverImage
+            ? book.CoverImage.replace("http://", "https://")
+            : "https://via.placeholder.com/100x150";
 
           return (
             <div key={book.BookID} className="book-item flex space-x-6 border-b pb-4">
               {/* Book Cover Image */}
               <img
-                src={book.CoverImage || "https://via.placeholder.com/100x150"}
+                src={coverUrl}
                 alt={book.Title}
                 className="w-32 h-48 object-cover rounded-md shadow-md"
               />
@@ -130,9 +143,6 @@ const App = () => {
                   </button>
                 )}
 
-                {/* Debugging: Show PDF Link */}
-                <p className="text-xs text-gray-400 break-all">{pdfUrl}</p>
-
                 {/* View PDF Button */}
                 {book.S3Path && (
                   <button
@@ -152,7 +162,7 @@ const App = () => {
       {selectedBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-4 rounded-lg">
-            <PDFViewer pdfUrl={selectedBook.PDFLink} />
+            <Flipbook pdfUrl={selectedBook.PDFLink} />
             <button
               onClick={closePDFViewer}
               className="bg-red-600 text-white px-4 py-2 rounded mt-4"
