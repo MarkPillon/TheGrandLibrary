@@ -1,5 +1,5 @@
 {
-  "name": "introdemo",
+  "name": "grandlibrary",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,6 +11,7 @@
     "start": "vite"
   },
   "dependencies": {
+    "@aws-amplify/cli": "^12.14.4",
     "@aws-sdk/client-dynamodb": "^3.751.0",
     "aws-sdk": "^2.1692.0",
     "jquery": "^3.7.1",
