@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import Flipbook from "./Flipbook";
+// import Flipbook from "./Flipbook"; // Keep for later
 
 const App = () => {
   const [books, setBooks] = useState([]);
   const [search, setSearch] = useState("");
+  const [searchType, setSearchType] = useState("Title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedBook, setSelectedBook] = useState(null);
   const [expandedBook, setExpandedBook] = useState(null);
 
-  // Handle search for books
   const handleSearch = async () => {
     if (!search) return;
 
@@ -19,7 +18,7 @@ const App = () => {
 
     try {
       const response = await fetch(
-        `https://o6hca89epf.execute-api.us-east-1.amazonaws.com/prod/search?search=${search}&type=Title`
+        `https://o6hca89epf.execute-api.us-east-1.amazonaws.com/prod/search?search=${search}&type=${searchType}`
       );
       const data = await response.json();
       console.log("Fetched Data:", data);
@@ -41,26 +40,13 @@ const App = () => {
     }
   };
 
-  // Debugging: Log selected book state
-  useEffect(() => {
-    console.log("Selected Book:", selectedBook);
-  }, [selectedBook]);
-
-  // Toggle expanded book description
   const toggleDescription = (bookId) => {
     setExpandedBook(expandedBook === bookId ? null : bookId);
   };
 
-  // Handle viewing a PDF
-  const handleViewPDF = (book) => {
-    const pdfUrl = `https://grandlibrary.s3.amazonaws.com/${encodeURIComponent(book.S3Path)}`;
-    console.log("Viewing PDF:", pdfUrl);
-    setSelectedBook({ ...book, PDFLink: pdfUrl });
-  };
-
-  // Close the PDF viewer
-  const closePDFViewer = () => {
-    setSelectedBook(null);
+  const handleViewPDF = (pdfUrl) => {
+    console.log("Opening PDF:", pdfUrl);
+    window.open(pdfUrl, "_blank");
   };
 
   return (
@@ -69,54 +55,60 @@ const App = () => {
         📚 The Grand Library - Book Search
       </h1>
 
-      {/* Search Input */}
-      <div className="flex space-x-2 mb-4">
+      <div className="search-bar flex space-x-2 mb-4 items-center">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by Title..."
-          className="border p-2 rounded w-full"
+          placeholder={`Search by ${searchType}...`}
+          className="search-input"
         />
+        <select
+          value={searchType}
+          onChange={(e) => setSearchType(e.target.value)}
+          className="search-select"
+        >
+          <option value="Title">Title</option>
+          <option value="Author">Author</option>
+          <option value="Topic">Topic</option>
+        </select>
         <button
           onClick={handleSearch}
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="search-button"
         >
           {loading ? "Loading..." : "Search"}
         </button>
       </div>
 
-      {/* Error Message */}
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {error && <div className="error mb-4">{error}</div>}
+      {/* New: Books Found Count */}
+      {books.length > 0 && !loading && (
+        <div className="books-count mb-4">
+          {books.length} {books.length === 1 ? "book" : "books"} found
+        </div>
+      )}
 
-      {/* Books List */}
       <div className="books-list space-y-6">
         {books.length === 0 && !loading && !error && (
           <p className="text-gray-500">No books found. Try a different search.</p>
         )}
 
         {books.map((book) => {
-          // Construct full S3 URL
           const pdfUrl = `https://grandlibrary.s3.amazonaws.com/${decodeURIComponent(decodeURIComponent(book.S3Path))}`;
-console.log("Constructed PDF URL:", pdfUrl);
-          
+          console.log("Constructed PDF URL:", pdfUrl);
 
-          // Update the cover image URL to use HTTPS
           const coverUrl = book.CoverImage
             ? book.CoverImage.replace("http://", "https://")
             : "https://via.placeholder.com/100x150";
 
           return (
             <div key={book.BookID} className="book-item flex space-x-6 border-b pb-4">
-              {/* Book Cover Image */}
               <img
                 src={coverUrl}
                 alt={book.Title}
                 className="w-32 h-48 object-cover rounded-md shadow-md"
               />
-
-              {/* Book Details */}
               <div className="book-details flex-1">
                 <h3 className="text-xl font-semibold">{book.Title}</h3>
                 <p className="text-sm text-gray-700">👨‍💼 {book.Author || "Unknown"}</p>
@@ -124,16 +116,12 @@ console.log("Constructed PDF URL:", pdfUrl);
                 <p className="text-sm text-gray-600">📖 Pages: {book.PageCount || "Unknown"}</p>
                 <p className="text-sm text-gray-500">🏷️ {book.Topic || "Not specified"}</p>
                 <p className="text-sm text-gray-500">⭐ Rating: {book.Rating || "No rating available"}</p>
-
-                {/* Book Description */}
                 <p className="mt-2 text-sm text-gray-500">
                   📝{" "}
                   {expandedBook === book.BookID
                     ? book.Description
                     : `${book.Description?.substring(0, 200)}...`}
                 </p>
-
-                {/* Toggle Description */}
                 {book.Description && (
                   <button
                     onClick={() => toggleDescription(book.BookID)}
@@ -142,11 +130,9 @@ console.log("Constructed PDF URL:", pdfUrl);
                     {expandedBook === book.BookID ? "Show Less" : "Show More"}
                   </button>
                 )}
-
-                {/* View PDF Button */}
                 {book.S3Path && (
                   <button
-                    onClick={() => handleViewPDF({ ...book, PDFLink: pdfUrl })}
+                    onClick={() => handleViewPDF(pdfUrl)}
                     className="bg-green-600 text-white px-4 py-2 rounded mt-2"
                   >
                     View PDF
@@ -157,21 +143,6 @@ console.log("Constructed PDF URL:", pdfUrl);
           );
         })}
       </div>
-
-      {/* PDF Viewer Modal */}
-      {selectedBook && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg">
-            <Flipbook pdfUrl={selectedBook.PDFLink} />
-            <button
-              onClick={closePDFViewer}
-              className="bg-red-600 text-white px-4 py-2 rounded mt-4"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

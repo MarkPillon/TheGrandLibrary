@@ -20,7 +20,7 @@
   transition: box-shadow 0.3s ease;
   display: flex;
   flex-direction: row;
-  align-items: stretch; /* Make both elements stretch to same height */
+  align-items: stretch;
 }
 
 .book-item:hover {
@@ -29,18 +29,18 @@
 
 .book-item img {
   max-width: 150px;
-  height: 100%; /* Make image take full height of the container */
-  object-fit: cover; /* Preserve aspect ratio without distortion */
+  height: 100%;
+  object-fit: cover;
   border-radius: 8px;
   margin-right: 1rem;
-  flex-shrink: 0; /* Prevent image from shrinking */
+  flex-shrink: 0;
 }
 
 .book-details {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Ensure it takes up remaining height */
-  flex-grow: 1; /* Allow content to stretch and fill available space */
+  justify-content: space-between;
+  flex-grow: 1;
 }
 
 .book-item h3 {
@@ -91,4 +91,71 @@ input {
 input:focus {
   outline: none;
   border-color: #61dafb;
+}
+
+/* Search Bar Styles */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin: 0; /* Remove any inherited margins */
+  height: 1.25rem; /* Match button/select height */
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #61dafb;
+}
+
+.search-select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  width: 120px;
+  background-color: white;
+  cursor: pointer;
+  height: 2.25rem; /* Match input/button height */
+  margin: 0; /* Remove any inherited margins */
+}
+
+.search-select:focus {
+  outline: none;
+  border-color: #61dafb;
+}
+
+.search-button {
+  background-color: #61dafb;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+  height: 2.25rem; /* Match input/select height */
+  margin: 0; /* Remove any inherited margins */
+}
+
+.search-button:disabled {
+  background-color: #ccc;
+}
+
+.search-button:hover:not(:disabled) {
+  background-color: #4fa3f7;
+}
+
+/* New Books Count Style */
+.books-count {
+  font-size: 1rem;
+  color: #555; /* Matches book-item p color */
+  margin-bottom: 1rem; /* Matches search-bar spacing */
 }
