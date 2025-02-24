@@ -1,0 +1,16 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci  # Install dependencies
+    build:
+      commands:
+        - npm run build  # Vite: "vite build" / CRA: "react-scripts build"
+  artifacts:
+    baseDirectory: build  # Output directory for Vite/CRA build
+    files:
+      - '**/*'  # Include all files in build
+  cache:
+    paths:
+      - node_modules/**/*  # Cache node_modules for faster builds
