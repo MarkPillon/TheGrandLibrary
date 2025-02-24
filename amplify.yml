@@ -3,14 +3,16 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci  # Install dependencies
+        - nvm install 20  # Install Node.js 20 if not present
+        - nvm use 20     # Use Node.js 20
+        - npm ci         # Install dependencies
     build:
       commands:
-        - npm run build  # Vite: "vite build" / CRA: "react-scripts build"
+        - npm run build  # Vite: "vite build"
   artifacts:
-    baseDirectory: build  # Output directory for Vite/CRA build
+    baseDirectory: build  # Vite output
     files:
       - '**/*'  # Include all files in build
   cache:
     paths:
-      - node_modules/**/*  # Cache node_modules for faster builds
+      - node_modules/**/*  # Cache node_modules
