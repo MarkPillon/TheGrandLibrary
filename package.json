@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "start": "vite",
+    "build": "vite build --outDir build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "start": "vite"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-amplify/cli": "^12.14.4",
     "@aws-sdk/client-dynamodb": "^3.751.0",
     "aws-sdk": "^2.1692.0",
     "jquery": "^3.7.1",
